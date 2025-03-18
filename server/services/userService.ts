@@ -71,7 +71,7 @@ export class UserService {
    * @param updateData Data to update
    * @returns Updated user
    */
-  async updateUser(userId: string, updateData: IUserUpdate): Promise<IUserDocument | null> {
+  async updateUser(userId: string | unknown, updateData: IUserUpdate): Promise<IUserDocument | null> {
     return User.findByIdAndUpdate(
       userId,
       updateData,
