@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export enum TaskStatus {
   DONE = 'done',
   NOT_DONE = 'not_done',
+  IN_PROGRESS = 'in_progress',
 }
 
 export enum TaskPriority {
@@ -90,7 +91,6 @@ const taskSchema = new Schema<ITask>(
   }
 );
 
-// Indexes for faster queries
 taskSchema.index({ userId: 1 });
 taskSchema.index({ status: 1 });
 taskSchema.index({ priority: 1 });

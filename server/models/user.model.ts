@@ -27,7 +27,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 8,
-      private: true, // won't be included in toJSON
+      private: true,
     },
     isEmailVerified: {
       type: Boolean,
@@ -39,7 +39,6 @@ const userSchema = new Schema<IUser>(
   }
 );
 
-// Hash password before saving
 userSchema.pre('save', async function (next) {
   const user = this;
   if (user.isModified('password')) {
@@ -48,12 +47,10 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// Method to compare passwords
 userSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Remove password when converting to JSON
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
   delete user.password;
