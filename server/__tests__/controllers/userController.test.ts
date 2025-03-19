@@ -11,12 +11,10 @@ import {
 } from '../../types/index';
 import { Document } from 'mongoose';
 
-// Define proper types for request with user property
 interface RequestWithUser extends Request {
   user?: IUserDocument;
 }
 
-// Create a proper mock of the userService
 jest.mock('../../services/userService', () => ({
   userService: {
     createUser: jest.fn(),
@@ -26,16 +24,13 @@ jest.mock('../../services/userService', () => ({
 }));
 
 describe('User Controller', () => {
-  // Setup mock request and response
   let mockRequest: Partial<RequestWithUser>;
   let mockResponse: Partial<Response>;
   let responseObj: any = {};
 
   beforeEach(() => {
-    // Reset mocks
     jest.clearAllMocks();
     
-    // Setup response mock
     responseObj = {
       json: jest.fn().mockReturnThis(),
       status: jest.fn().mockReturnThis(),
@@ -45,14 +40,12 @@ describe('User Controller', () => {
 
   describe('register', () => {
     test('should register a user successfully', async () => {
-      // Arrange
       const userData: IUserCreate = {
         name: 'Test User',
         email: 'test@example.com',
         password: 'password123'
       };
       
-      // Create mock user that matches the expected IUserDocument structure
       const mockUser = {
         _id: '123',
         name: 'Test User',
@@ -70,20 +63,16 @@ describe('User Controller', () => {
         body: userData
       };
       
-      // Use type assertion with any to bypass TypeScript's type checking for the mock
       (userService.createUser as any).mockResolvedValue(expectedResult);
 
-      // Act
       await register(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.createUser).toHaveBeenCalledWith(userData);
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
     });
 
     test('should handle email already in use error', async () => {
-      // Arrange
       const userData: IUserCreate = {
         name: 'Test User',
         email: 'existing@example.com',
@@ -96,13 +85,10 @@ describe('User Controller', () => {
         body: userData
       };
       
-      // Use type assertion with any
       (userService.createUser as any).mockRejectedValue(error);
 
-      // Act
       await register(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.createUser).toHaveBeenCalledWith(userData);
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -112,7 +98,6 @@ describe('User Controller', () => {
     });
 
     test('should handle generic server error', async () => {
-      // Arrange
       const userData: IUserCreate = {
         name: 'Test User',
         email: 'test@example.com',
@@ -125,13 +110,10 @@ describe('User Controller', () => {
         body: userData
       };
       
-      // Use type assertion with any
       (userService.createUser as any).mockRejectedValue(error);
 
-      // Act
       await register(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.createUser).toHaveBeenCalledWith(userData);
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -141,7 +123,6 @@ describe('User Controller', () => {
     });
 
     test('should handle non-Error exception', async () => {
-      // Arrange
       const userData: IUserCreate = {
         name: 'Test User',
         email: 'test@example.com',
@@ -152,13 +133,10 @@ describe('User Controller', () => {
         body: userData
       };
       
-      // Use type assertion with any
       (userService.createUser as any).mockRejectedValue('Some string error');
 
-      // Act
       await register(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.createUser).toHaveBeenCalledWith(userData);
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -170,13 +148,11 @@ describe('User Controller', () => {
 
   describe('login', () => {
     test('should login a user successfully', async () => {
-      // Arrange
       const loginData: IUserLogin = {
         email: 'test@example.com',
         password: 'password123'
       };
       
-      // Create mock user that matches the expected IUserDocument structure
       const mockUser = {
         _id: '123',
         name: 'Test User',
@@ -194,20 +170,16 @@ describe('User Controller', () => {
         body: loginData
       };
       
-      // Use type assertion with any
       (userService.loginUser as any).mockResolvedValue(expectedResult);
 
-      // Act
       await login(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.loginUser).toHaveBeenCalledWith(loginData);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(expectedResult);
     });
 
     test('should handle invalid credentials', async () => {
-      // Arrange
       const loginData: IUserLogin = {
         email: 'test@example.com',
         password: 'wrongpassword'
@@ -219,13 +191,10 @@ describe('User Controller', () => {
         body: loginData
       };
       
-      // Use type assertion with any
       (userService.loginUser as any).mockRejectedValue(error);
 
-      // Act
       await login(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.loginUser).toHaveBeenCalledWith(loginData);
       expect(mockResponse.status).toHaveBeenCalledWith(401);
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -235,7 +204,6 @@ describe('User Controller', () => {
     });
 
     test('should handle server error during login', async () => {
-      // Arrange
       const loginData: IUserLogin = {
         email: 'test@example.com',
         password: 'password123'
@@ -247,13 +215,10 @@ describe('User Controller', () => {
         body: loginData
       };
       
-      // Use type assertion with any
       (userService.loginUser as any).mockRejectedValue(error);
 
-      // Act
       await login(mockRequest as Request, mockResponse as Response);
 
-      // Assert
       expect(userService.loginUser).toHaveBeenCalledWith(loginData);
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({

@@ -9,7 +9,6 @@ import {
    IUserDocument
 } from '../types/index';
 
-// Define a custom request interface with user property
 interface RequestWithUser extends Request {
   user: IUserDocument;
 }
