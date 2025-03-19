@@ -13,8 +13,4 @@ export const authApi = {
   async getProfile(): Promise<User> {
     return apiClient.get<User>('/users/profile');
   },
-
-  async updateProfile(updates: { name: string }): Promise<User> {
-    return apiClient.patch<User>('/users/profile', updates);
-  }
 };

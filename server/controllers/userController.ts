@@ -10,8 +10,11 @@ import {
 } from '../types/index';
 
 interface RequestWithUser extends Request {
-  user: IUserDocument;
-}
+    user: {
+      _id: string;
+      [key: string]: any;
+    };
+  }
 
 export const register = async (req: Request, res: Response<IAuthResponse | IErrorResponse>): Promise<void> => {
   try {
@@ -46,30 +49,16 @@ export const login = async (req: Request, res: Response<IAuthResponse | IErrorRe
   }
 };
 
-export const getProfile = async (req: RequestWithUser, res: Response): Promise<void> => {
-  try {
-    res.status(200).json(req.user);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching profile', error });
-  }
-};
-
-export const updateProfile = async (req: RequestWithUser, res: Response): Promise<void> => {
-  try {
-    const updateData: IUserUpdate = {
-      name: req.body.name
-    };
-        
-    const userId = req.user._id;
-    const updatedUser = await userService.updateUser(userId, updateData);
-    
-    if (!updatedUser) {
-      res.status(404).json({ message: 'User not found' });
-      return;
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const user = (req as any).user;
+      if (!user) {
+        res.status(401).json({ message: 'Unauthorized' });
+        return;
+      }
+      
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching profile', error });
     }
-    
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating profile', error });
-  }
-};
+  };

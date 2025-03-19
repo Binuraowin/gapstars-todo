@@ -1,7 +1,7 @@
 import { describe, it, expect, jest, beforeEach, test } from '@jest/globals';
 import { Request, Response } from 'express';
 import { userService } from '../../services/userService';
-import { register, login, getProfile, updateProfile } from '../../controllers/userController';
+import { register, login, getProfile } from '../../controllers/userController';
 import { 
   IAuthResponse, 
   IUserDocument, 
@@ -225,6 +225,35 @@ describe('User Controller', () => {
         message: 'Database error',
         error
       });
+    });
+  });
+
+  describe('getProfile', () => {
+    test('should return user profile when authenticated', async () => {
+      const mockUser = {
+        _id: '123',
+        name: 'Test User',
+        email: 'test@example.com',
+        isEmailVerified: true
+      };
+      
+      mockRequest = {
+        user: mockUser as any
+      };
+  
+      await getProfile(mockRequest as Request, mockResponse as Response);
+  
+      expect(responseObj.status).toHaveBeenCalledWith(200);
+      expect(responseObj.json).toHaveBeenCalledWith(mockUser);
+    });
+  
+    test('should return 401 when user is not authenticated', async () => {
+      mockRequest = {};
+  
+      await getProfile(mockRequest as Request, mockResponse as Response);
+  
+      expect(responseObj.status).toHaveBeenCalledWith(401);
+      expect(responseObj.json).toHaveBeenCalledWith({ message: 'Unauthorized' });
     });
   });
 });
