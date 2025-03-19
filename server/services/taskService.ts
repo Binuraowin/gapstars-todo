@@ -9,7 +9,7 @@ export class TaskService {
    * @param filters Query filters
    * @returns Array of tasks
    */
-  async getTasks(userId: string, filters: ITaskQueryFilters): Promise<ITaskDocument[]> {
+  async getTasks(userId: string | unknown, filters: ITaskQueryFilters): Promise<ITaskDocument[]> {
     const { status, priority, search, sort = 'createdAt', order = 'desc' } = filters;
     
     const query: any = { userId };
@@ -40,7 +40,7 @@ export class TaskService {
    * @param userId User ID
    * @returns Task document or null if not found
    */
-  async getTaskById(taskId: string, userId: string): Promise<ITaskDocument | null> {
+  async getTaskById(taskId: string, userId: string | unknown): Promise<ITaskDocument | null> {
     if (!mongoose.Types.ObjectId.isValid(taskId)) {
       throw new Error('Invalid task ID');
     }
@@ -88,7 +88,7 @@ export class TaskService {
    * @param updates Task updates
    * @returns Updated task
    */
-  async updateTask(taskId: string, userId: string, updates: ITaskUpdate): Promise<ITaskDocument | null> {
+  async updateTask(taskId: string, userId: string | unknown, updates: ITaskUpdate): Promise<ITaskDocument | null> {
     if (!mongoose.Types.ObjectId.isValid(taskId)) {
       throw new Error('Invalid task ID');
     }
@@ -157,11 +157,11 @@ export class TaskService {
    * @param userId User ID
    * @returns Success status
    */
-  async deleteTask(taskId: string, userId: string): Promise<boolean> {
+  async deleteTask(taskId: string, userId: string | unknown): Promise<boolean> {
     if (!mongoose.Types.ObjectId.isValid(taskId)) {
       throw new Error('Invalid task ID');
     }
-
+ 
     const dependentTasks = await Task.find({ dependencies: taskId });
     if (dependentTasks.length > 0) {
       const dependentTaskTitles = dependentTasks.map(task => task.title).join(', ');

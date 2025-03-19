@@ -2,9 +2,16 @@ import { Request, Response } from 'express';
 import { taskService } from '../services/taskService';
 import { ITaskUpdate, ITaskQueryFilters } from '../types/tasks';
 
+interface RequestWithUser extends Request {
+  user: {
+    _id: string;
+    [key: string]: any;
+  };
+}
+
 export const getTasks = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user._id;
+    const userId = (req as RequestWithUser).user._id;
     const filters: ITaskQueryFilters = {
       status: req.query.status as string,
       priority: req.query.priority as string,
@@ -23,7 +30,7 @@ export const getTasks = async (req: Request, res: Response): Promise<void> => {
 export const getTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const userId = req.user._id;
+    const userId = (req as RequestWithUser).user._id;
 
     try {
       const task = await taskService.getTaskById(id, userId);
@@ -48,7 +55,7 @@ export const getTask = async (req: Request, res: Response): Promise<void> => {
 
 export const createTask = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = req.user._id;
+    const userId = (req as RequestWithUser).user._id;
     const taskData = {
       ...req.body,
       userId,
@@ -74,7 +81,7 @@ export const createTask = async (req: Request, res: Response): Promise<void> => 
 export const updateTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const userId = req.user._id;
+    const userId = (req as RequestWithUser).user._id;
     const updates: ITaskUpdate = req.body;
 
     try {
@@ -108,7 +115,7 @@ export const updateTask = async (req: Request, res: Response): Promise<void> => 
 export const deleteTask = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const userId = req.user._id;
+    const userId = (req as RequestWithUser).user._id;
 
     try {
       await taskService.deleteTask(id, userId);
